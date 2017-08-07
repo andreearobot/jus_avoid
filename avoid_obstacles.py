@@ -35,7 +35,8 @@ stopped= 0.5
 
 def avoid():
 	# Node initialization
-	rospy.init_node('control')
+	rospy.init_node('control', anonymous=False)
+ 	rospy.on_shutdown(self.shutdown)
 
 	############################################
 	# BEGIN SUBSCRIBER: Sharp sensor
@@ -97,12 +98,17 @@ def avoid():
 		print "RIGHT motor speed= ", speed_R
 		rate. sleep()
 
-if __name__ == '__main__':
-	try:
-		avoid()
-	except rospy.ROSInterruptException:
-		write_left.publish(0)
-		write_right.publish(0)
-		pass
+def shutdown(self):
+        rospy.loginfo("Stop")
+	write_left.publish(0)
+	write_right.publish(0)
+        rospy.sleep(1)
+ 
+if _name_ == '_main_':
+    try:
+        avoid()
+    except:
+        rospy.loginfo("node terminated.")
+
 # END LOOP
 # END ALL
