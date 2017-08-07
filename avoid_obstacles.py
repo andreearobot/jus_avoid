@@ -95,4 +95,6 @@ while not rospy.is_shutdown():
         rate. sleep()
 
 # END LOOP
+write_left.publish(0)
+write_right.publish(0)
 # END ALL
