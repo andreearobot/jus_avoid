@@ -1,39 +1,39 @@
 #!/usr/bin/env python
 # BEGIN ALL
 
-import sys
 import rospy
 from std_msgs.msg import Int32
 
-try:
-	# Maestro channel assignment
-	izq = 4
-	dcho = 5
-	# Threshold distance: below, change rotation wheel
-	min_dist= 23.1 # Corresponding to an output of 250 from Sharp sensor
+# Maestro channel assignment
+izq = 4
+dcho = 5
+# Threshold distance: below, change rotation wheel
+min_dist= 23.1 # Corresponding to an output of 250 from Sharp sensor
 
-	# SPEED CONTROL
-	zero= 6000 # STOPPED
-	speed= 600 # REFERENCE SPEED
-	desv=       -0.13*speed
-	spin= 300 # ROTATION SPEED
-	desv_spin=  -0.13*spin
+# SPEED CONTROL
+zero= 6000 # STOPPED
+speed= 600 # REFERENCE SPEED
+desv=       -0.13*speed
+spin= 300 # ROTATION SPEED
+desv_spin=  -0.13*spin
 
-	# BEGIN CALLBACK
-	def scan_callback(msg):
-        	global g_sharp_ahead
-        	g_sharp_ahead = msg.data
- 	# END CALLBACK
+# BEGIN CALLBACK
+def scan_callback(msg):
+        global g_sharp_ahead
+        g_sharp_ahead = msg.data
+ # END CALLBACK
 
-	g_sharp_ahead = 50 #Anything to start, no obstacle in front
-	speed_L= 0
-	speed_R= 0
+g_sharp_ahead = 50 #Anything to start, no obstacle in front
+speed_L= 0
+speed_R= 0
 
-	# Times of motion and pause to stabilise reading of the sharp sensor
-	cycle = 0.5 # Used for rospy.Rate, 'fwFactor' times driving forward if no obstacle is found
-	fwFactor= 100
-	turning = 1
-	stopped= 0.5	
+# Times of motion and pause to stabilise reading of the sharp sensor
+cycle = 0.5 # Used for rospy.Rate, 'fwFactor' times driving forward if no obstacle is found
+fwFactor= 100
+turning = 1
+stopped= 0.5	
+
+def avoid():
 	# Node initialization
 	rospy.init_node('control')
 
@@ -55,6 +55,7 @@ try:
 
 	# BEGIN LOOP
 	rate = rospy.Rate(1/cycle)
+
 
 	while not rospy.is_shutdown():
 		# CHECK IF IT IS NEEDED TO CHANGE THE STATE BETWEEN AHEAD/TURNING
@@ -95,9 +96,13 @@ try:
 		print "LEFT motor speed=   ", speed_L
 		print "RIGHT motor speed= ", speed_R
 		rate. sleep()
-except KeyboardInterrupt:
-	# END LOOP
-	write_left.publish(0)
-	write_right.publish(0)
-	sys.exit(0)
-	# END ALL
+
+if __name__ == '__main__':
+	try:
+		avoid()
+	except rospy.ROSInterruptException:
+		write_left.publish(0)
+		write_right.publish(0)
+		pass
+# END LOOP
+# END ALL
